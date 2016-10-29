@@ -126,5 +126,20 @@ for (i in 1:nrow(selected_businesses)){
   betweeness_high_users_df <- rbind(betweeness_high_users_df,betweeness_high_users)
 
 }
-###########################################
+#########################################################################################
 business_sna
+head(betweeness_pop_users_df)
+names(betweeness_pop_users_df) <- c("business_id","user_id")
+betweeness_pop_users_df$type <- "popular_user"
+names(betweeness_high_users_df) <- c("business_id","user_id")
+betweeness_high_users_df$type <- "high_centrality_user"
+high_users <- rbind(betweeness_pop_users_df,betweeness_high_users_df)
+head(high_users)
+sort(table(high_users$user_id),decreasing = T)[1:4]
+
+subset(high_users,high_users$user_id == "9A2-wSoBUxlMd3LwmlGrrQ")
+subset(high_users,high_users$user_id == "k5p3YP1ZjCa8ZS3xqXgBug")
+subset(high_users,high_users$user_id == "OAd-vbR_POac1zHtu-Y2Zg")
+subset(high_users,high_users$user_id == "5lq4LkrviYgQ4LJNsBYHcA")
+
+sort(table(betweeness_high_users_df$user_id),decreasing = T)[1:4]

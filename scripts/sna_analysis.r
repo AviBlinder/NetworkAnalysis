@@ -160,17 +160,30 @@ max_maximal_clique <- max(sapply(maximal.cliques(Y_graph),length))
 ##Community Analysis
 ##Clustering
 #sgc <- spinglass.community(Y_graph)
+
+## clusters --> fast algorithm
 #cls <- clusters(Y_graph)
-cls <- edge.betweenness.community(Y_graph)
-#cls <- fastgreedy.community(Y_graph)
-head(cls$membership)
+##edge.betweenness.community --> heavy algorithm!!
+#cls <- edge.betweenness.community(Y_graph)
+
+#fastgreedy --> fast algorithm
+cls <- fastgreedy.community(Y_graph)
+
+table(cls$membership)
 cls$csize
 cls$no
 
 V(Y_graph)$membership <- cls$membership
-V(Y_graph) [ membership == 0 ]$color <- "cyan"
-V(Y_graph) [ membership == 1 ]$color <- "green"
-V(Y_graph) [ membership > 1 ]$color <- "blue"
+V(Y_graph) [ membership == 1 ]$color <- "cyan"
+V(Y_graph) [ membership == 2 ]$color <- "green"
+V(Y_graph) [ membership == 3 ]$color <- "blue"
+V(Y_graph) [ membership == 4 ]$color <- colors()[4]
+V(Y_graph) [ membership == 5 ]$color <- colors()[5]
+V(Y_graph) [ membership == 6 ]$color <- colors()[6]
+V(Y_graph) [ membership == 7 ]$color <- colors()[7]
+V(Y_graph) [ membership == 8 ]$color <- colors()[8]
+V(Y_graph) [ membership == 9 ]$color <- colors()[9]
+V(Y_graph) [ membership > 9 ]$color <- colors()[10]
 V(Y_graph)$size <- 0.1
 
 set.seed(4312)
@@ -181,56 +194,7 @@ plot(Y_graph,
      vertex.color=V(Y_graph)$color,
      vertex.size = V(Y_graph)$size,
      vertex.label = NA,
-     edge.width = 0.01,
+     edge.width = NA,
      edge.arrow.size = 0.001)
 
-#This algorithm is the Clauset-Newman-Moore algorithm. In this case the algorithm is
-# agglomerative and at each step the merge is decided by the optimization of modularity that
-# it produces as the result of the merge.
-# This is very fast, but has the disadvantage of being a greedy algorithm, so it
-# is might not produce the best overall community partitioning, although I find it
-# very useful and very accurate.
-# fg_comms <- fastgreedy.community(Y_graph)
-# head(fg_comms)
-# #fg_comms$names
-# ##clusters
-# cluster <- fg_comms$membership
-# cluster
-#
-# #Number of clusters
-# length(fg_comms)
-# sizes_df <- data.frame(sizes(fg_comms))
-# names(sizes_df) <- c("cluster_id","MembersNumber")
-# sort(sizes(fg_comms),decreasing = T)
-# subset(sizes_df,sizes_df$MembersNumber == 2)
-# membership(fg_comms)[fg_comms$membership == 135]
-# cluster_id <- unlist(subset(sizes_df,sizes_df$MembersNumber > 100,select="cluster_id"))
-#
-# V(Y_graph)$clusterId <- fg_comms$membership
-# Y_graph_sub <- V(Y_graph)[V(Y_graph)$clusterId %in% as.integer(cluster_id)]
-#
-#
-# ## Run Girvan-Newman clustering algorithm.
-# communities = edge.betweenness.community(Y_graph)
-# head(communities)
-# # Extract cluster assignments and merge with nodes data.frame.
-# memb = data.frame(name = communities$names, cluster = communities$membership)
-#
 
-#######################################################################################
-##Spin-glass community detection:
-# m1 <- membership(Y_graph)
-# sgc <- spinglass.community(Y_graph)
-# sgc <- cluster_spinglass(Y_graph)
-# V(Y_graph)$membership <- sgc$membership
-# # found 4 communities 0, 1, 2, 3
-# V(g) [ membership == 0 ]$color <- "cyan"
-# V(g) [ membership == 1 ]$color <- "green"
-# V(g) [ membership == 2 ]$color <- "blue"
-# V(g) [ membership == 3 ]$color <- "red"
-# V(g)$size <- 4
-# V(g) [ name == "the-life-scientists" ]$size <- 20
-# png(filename = "tls.png", height = 800, width = 800)
-# plot(g, layout=layout.fruchterman.reingold, vertex.color=V(g)$color, vertex.size = V(g)$size, vertex.label = NA, edge.arrow.size = 0.5)
-# dev.off()
-#######################################################################################
