@@ -11,7 +11,7 @@ library(igraph)
 i <- 1
 for (i in 1:nrow(selected_businesses)){
   current_business <- as.character(selected_businesses$business_id[i])
-  cat("current business = ", current_business, "\n")
+  cat("current business = ", current_business, "-->", i ,  "\n")
   r1 <- subset(reviews,
                reviews$business_id == current_business)
 
@@ -120,7 +120,9 @@ for (i in 1:nrow(selected_businesses)){
 
 
   business_sna <- rbind(business_sna,curr_business_sna)
-  betweeness_pop_users_df <- rbind(betweeness_pop_users_df,betweeness_pop_users)
+  if(dim(betweeness_pop_users)[2]>1){
+      betweeness_pop_users_df <- rbind(betweeness_pop_users_df,betweeness_pop_users)
+  }
   betweeness_high_users_df <- rbind(betweeness_high_users_df,betweeness_high_users)
 
 }
