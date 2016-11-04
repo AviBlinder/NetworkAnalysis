@@ -11,8 +11,30 @@ number_of_businesses <- 100
 analysis_treshold <- 0.30
 
 input_business <- head(tb1[order(-tb1$reviewsNumber),],number_of_businesses)
-head(input_business)
+input_business <- merge(input_business,business[,c("business_id","name")],by="business_id")
 
+range(input_business$reviewsNumber)
+input_business <- input_business[,c(1,3,2)]
+input_business <- input_business[order(-input_business$reviewsNumber),]
+###########################################################################################
+head(input_business)
+row.names(input_business) <- NULL
+kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number of Reviews"),
+      caption = "Top 10 Most Reviewed Restaurants")
+
+png(filename = "ReviewsNumbers.png",
+    bg = colors()[13], res = NA, family = "", restoreConsole = TRUE)
+hist(input_business$reviewsNumber,col=colors()[135],breaks = nrow(input_business)/4,
+    xlim=c(1100,5600),ylim=c(0,20),border = colors()[300],
+     main="Top 100 Restaurants by Number of Reviews",xlab = "Number of Reviews",ylab = "Count of Restaurants")
+dev.off()
+
+  png(filename = "Top 15 Most Reviewed Restaurants.png",
+    bg = "white", res = NA, family = "", restoreConsole = TRUE)
+kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number of Reviews"),
+      caption = "Top 15 Most Reviewed Restaurants")
+dev.off()
+##########################################################################################
 ##Analyze the number of users with and withoud friends that gave reviews to a business
 friends_props <- c()
 for (i in 1:nrow(input_business)){
