@@ -89,17 +89,10 @@ most_pop_user_df <- data.frame(most_pop_user)
 names(most_pop_user_df) <- c("user_id","Frequency")
 reviews_number <- as.data.frame(most_pop_user)
 names(reviews_number) <- c("user_id","AppearanceNumber")
-reviews_number
-
-reviews_number1 <- merge(reviews_number,users[,c("user_id","name")],by="user_id")
-reviews_number1 <- reviews_number1[order(-reviews_number1$AppearanceNumber),]
 
 
-png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",
-    bg = "white", res = NA, family = "", restoreConsole = TRUE)
-kable(reviews_number1[,c(2:3)],align = "c",col.names = c("Number of Reviews","User Name"),
-      caption = "Top 10 Users By Number of Reviewes to Selected Restaurants")
-dev.off()
+
+
 
 ############################################################################################
 most_pop_user_names <- reviews_number$user_id
@@ -108,6 +101,23 @@ most_pop_user_names_info <- users[users$user_id %in% most_pop_user_names,]
 most_pop_user_names_info <- merge(most_pop_user_names_info,reviews_number,by="user_id")
 most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$AppearanceNumber),]
 View(most_pop_user_names_info)
+
+
+reviews_number1 <- most_pop_user_names_info[,-c(1,7)]
+row.names(reviews_number1) <- NULL
+reviews_number1 <- reviews_number1[,c(3,1,6,7,8,2,4,5)]
+names(reviews_number1) <- c("name","Yelper Since","Number of Friends","Number of Elite Member",
+                            "Number of Reviews on Top Restaurants","Total Reviews","Fans",
+                            "Average Stars")
+reviews_number1
+
+
+png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",
+    bg = "white", res = NA, family = "", restoreConsole = TRUE)
+kable(reviews_number1[,c(1:4)],align = "c",
+      caption = "Top 10 Users By Number of Reviewes to Selected Restaurants")
+dev.off()
+
 #########################################################################################
 # business_featuers <- names(selected_businesses)[c(1,31:87)]
 # idx <- which(business_featuers %in% c("Noise.Level","Attire","Alcohol",
