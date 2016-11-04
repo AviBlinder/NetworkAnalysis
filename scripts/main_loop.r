@@ -1,3 +1,7 @@
+###Proportion of Yelps users having at least one friend
+round (prop.table(table(users$FriendsNumber > 0)),2)
+
+
 #Summarize reviews table (e.g. number of reviews each business received)
 tb1 <- data.frame(table(reviews$business_id))
 names(tb1) <- c("business_id","reviewsNumber")
@@ -7,16 +11,17 @@ number_of_businesses <- 100
 analysis_treshold <- 0.30
 
 input_business <- head(tb1[order(-tb1$reviewsNumber),],number_of_businesses)
+head(input_business)
 
 ##Analyze the number of users with and withoud friends that gave reviews to a business
 friends_props <- c()
-for (i in 1:nrow(input_business)){ 
+for (i in 1:nrow(input_business)){
   # Pick all the reviews from a specific business, containing any rate
     current_business <- input_business$business_id[i]
     r1 <- subset(reviews,
                  reviews$business_id == current_business)
-    
-    
+
+
     #r2 <- subset(reviews,
     #     reviews$business_id == max_business & reviews$stars >= 4)
     #Pick the information about the business from the business dataset
@@ -25,7 +30,7 @@ for (i in 1:nrow(input_business)){
     #Pick all the users that gave a review to that business
     users_b1 <- data.frame(unique(r1$user_id))
     names(users_b1) <- "user_id"
-    
+
     ##How many reviewers are connected with at least one friend
     unique_users_b1 <- users[users$user_id %in% users_b1$user_id,]
     props <- round(prop.table(table(unique_users_b1$FriendsNumber == 0)),2)
@@ -33,11 +38,11 @@ for (i in 1:nrow(input_business)){
     props_df <- data.frame(FALSES = props[1],TRUES = props[2])
     row.names(props_df) <- NULL
     barplot(props,col=colors()[i+20])
-    
+
     props_business <- cbind(props_df,business_id=as.character(current_business))
-    
+
     friends_props <- rbind(friends_props,props_business)
-    
+
 }
 
 friends_props[order(-friends_props$TRUES),]
@@ -76,10 +81,10 @@ View(most_pop_user_names_info)
 # selected_business_features <- selected_businesses[,business_featuers]
 # names(selected_business_features)
 # sapply(selected_businesses,class)
-# 
+#
 # dim(selected_business_features)
 # sort(colSums(selected_business_features[2:50]),decreasing = TRUE)
-# 
+#
 # idx <- which(names(selected_businesses) %in% c("business_id","BYOB"))
 # selected_businesses_lm <- selected_businesses[,-idx]
 # #fit1 <- lm(selected_businesses_lm$TRUES ~ . ,data=selected_businesses_lm)
