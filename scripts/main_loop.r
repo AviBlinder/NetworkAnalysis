@@ -16,6 +16,7 @@ input_business <- merge(input_business,business[,c("business_id","name")],by="bu
 range(input_business$reviewsNumber)
 input_business <- input_business[,c(1,3,2)]
 input_business <- input_business[order(-input_business$reviewsNumber),]
+
 ###########################################################################################
 head(input_business)
 row.names(input_business) <- NULL
@@ -29,7 +30,7 @@ hist(input_business$reviewsNumber,col=colors()[135],breaks = nrow(input_business
      main="Top 100 Restaurants by Number of Reviews",xlab = "Number of Reviews",ylab = "Count of Restaurants")
 dev.off()
 
-  png(filename = "Top 15 Most Reviewed Restaurants.png",
+png(filename = "Top 15 Most Reviewed Restaurants.png",
     bg = "white", res = NA, family = "", restoreConsole = TRUE)
 kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number of Reviews"),
       caption = "Top 15 Most Reviewed Restaurants")
@@ -53,7 +54,7 @@ for (i in 1:nrow(input_business)){
     users_b1 <- data.frame(unique(r1$user_id))
     names(users_b1) <- "user_id"
 
-    ##How many reviewers are connected with at least one friend
+    ##How many users have at least one friend
     unique_users_b1 <- users[users$user_id %in% users_b1$user_id,]
     props <- round(prop.table(table(unique_users_b1$FriendsNumber == 0)),2)
     #Convert the table into a 2-cols dataframe
@@ -80,6 +81,7 @@ dim(businesses_for_analysis)
 
 #names(selected_businesses)
 reviews_table <- reviews[(reviews$business_id %in% selected_businesses$business_id),]
+
 t1 <- table(as.character(reviews_table$user_id))
 most_pop_user <- head(sort(t1,decreasing = TRUE),10)
 most_pop_user
@@ -88,6 +90,18 @@ names(most_pop_user_df) <- c("user_id","Frequency")
 reviews_number <- as.data.frame(most_pop_user)
 names(reviews_number) <- c("user_id","AppearanceNumber")
 reviews_number
+
+reviews_number1 <- merge(reviews_number,users[,c("user_id","name")],by="user_id")
+reviews_number1 <- reviews_number1[order(-reviews_number1$AppearanceNumber),]
+
+
+png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",
+    bg = "white", res = NA, family = "", restoreConsole = TRUE)
+kable(reviews_number1[,c(2:3)],align = "c",col.names = c("Number of Reviews","User Name"),
+      caption = "Top 10 Users By Number of Reviewes to Selected Restaurants")
+dev.off()
+
+############################################################################################
 most_pop_user_names <- reviews_number$user_id
 
 most_pop_user_names_info <- users[users$user_id %in% most_pop_user_names,]
