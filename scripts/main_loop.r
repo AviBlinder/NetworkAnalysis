@@ -106,7 +106,7 @@ View(most_pop_user_names_info)
 reviews_number1 <- most_pop_user_names_info[,-c(1,7)]
 row.names(reviews_number1) <- NULL
 reviews_number1 <- reviews_number1[,c(3,1,6,7,8,2,4,5)]
-names(reviews_number1) <- c("name","Yelper Since","Number of Friends","Number of Elite Member",
+names(reviews_number1) <- c("name","Yelper Since","Number of Friends","Elite Years",
                             "Number of Reviews on Top Restaurants","Total Reviews","Fans",
                             "Average Stars")
 reviews_number1
@@ -114,7 +114,9 @@ reviews_number1
 
 png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",
     bg = "white", res = NA, family = "", restoreConsole = TRUE)
-kable(reviews_number1[,c(1:4)],align = "c",
+kable(reviews_number1[,c(1:5)],align = "c",
+      col.names = c("name","Yelper Since","Friends Number","Elite Years",
+                    "Reviews on Top Rests."),
       caption = "Top 10 Users By Number of Reviewes to Selected Restaurants")
 dev.off()
 
