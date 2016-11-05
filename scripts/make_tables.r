@@ -1,3 +1,4 @@
+#ftp://cran.r-project.org/pub/R/web/packages/gridExtra/vignettes/tableGrob.html
 DT <- reviews_number1
 library(grid)
 library(gridExtra)
@@ -28,4 +29,5 @@ t1 <- ttheme_default(core=list(
 ))
 
 grid.table(DT[1:10, 1:8], theme = t1)
-
+t1 <- ttheme_default()
+grid.table(DT[1:10, 1:8], theme = t1)
