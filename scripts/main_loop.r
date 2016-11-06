@@ -26,7 +26,7 @@ kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number 
 png(filename = "ReviewsNumbers.png",
     bg = colors()[13], res = NA, family = "", restoreConsole = TRUE)
 hist(input_business$reviewsNumber,col=colors()[135],breaks = nrow(input_business)/4,
-    xlim=c(1100,5600),ylim=c(0,20),border = colors()[300],
+     xlim=c(1100,5600),ylim=c(0,20),border = colors()[300],
      main="Top 100 Restaurants by Number of Reviews",xlab = "Number of Reviews",ylab = "Count of Restaurants")
 dev.off()
 
@@ -40,31 +40,31 @@ dev.off()
 friends_props <- c()
 for (i in 1:nrow(input_business)){
   # Pick all the reviews from a specific business, containing any rate
-    current_business <- input_business$business_id[i]
-    r1 <- subset(reviews,
-                 reviews$business_id == current_business)
+  current_business <- input_business$business_id[i]
+  r1 <- subset(reviews,
+               reviews$business_id == current_business)
 
 
-    #r2 <- subset(reviews,
-    #     reviews$business_id == max_business & reviews$stars >= 4)
-    #Pick the information about the business from the business dataset
-    b1 <-  subset(business,business$business_id == as.character(current_business))
+  #r2 <- subset(reviews,
+  #     reviews$business_id == max_business & reviews$stars >= 4)
+  #Pick the information about the business from the business dataset
+  b1 <-  subset(business,business$business_id == as.character(current_business))
 
-    #Pick all the users that gave a review to that business
-    users_b1 <- data.frame(unique(r1$user_id))
-    names(users_b1) <- "user_id"
+  #Pick all the users that gave a review to that business
+  users_b1 <- data.frame(unique(r1$user_id))
+  names(users_b1) <- "user_id"
 
-    ##How many users have at least one friend
-    unique_users_b1 <- users[users$user_id %in% users_b1$user_id,]
-    props <- round(prop.table(table(unique_users_b1$FriendsNumber == 0)),2)
-    #Convert the table into a 2-cols dataframe
-    props_df <- data.frame(FALSES = props[1],TRUES = props[2])
-    row.names(props_df) <- NULL
-    barplot(props,col=colors()[i+20])
+  ##How many users have at least one friend
+  unique_users_b1 <- users[users$user_id %in% users_b1$user_id,]
+  props <- round(prop.table(table(unique_users_b1$FriendsNumber == 0)),2)
+  #Convert the table into a 2-cols dataframe
+  props_df <- data.frame(FALSES = props[1],TRUES = props[2])
+  row.names(props_df) <- NULL
+  barplot(props,col=colors()[i+20])
 
-    props_business <- cbind(props_df,business_id=as.character(current_business))
+  props_business <- cbind(props_df,business_id=as.character(current_business))
 
-    friends_props <- rbind(friends_props,props_business)
+  friends_props <- rbind(friends_props,props_business)
 
 }
 
@@ -83,14 +83,13 @@ dim(businesses_for_analysis)
 reviews_table <- reviews[(reviews$business_id %in% selected_businesses$business_id),]
 
 t1 <- table(as.character(reviews_table$user_id))
-most_pop_user <- head(sort(t1,decreasing = TRUE),10)
+most_pop_user <- head(sort(t1,decreasing = TRUE),50)
 most_pop_user
 most_pop_user_df <- data.frame(most_pop_user)
 names(most_pop_user_df) <- c("user_id","Frequency")
 reviews_number <- as.data.frame(most_pop_user)
 names(reviews_number) <- c("user_id","AppearanceNumber")
-
-
+reviews_number
 
 
 
@@ -109,7 +108,7 @@ reviews_number1 <- reviews_number1[,c(3,1,6,7,8,2,4,5)]
 names(reviews_number1) <- c("name","Yelper Since","Number of Friends","Elite Years",
                             "Number of Reviews on Top Restaurants","Total Reviews","Fans",
                             "Average Stars")
-reviews_number1
+
 
 
 png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",

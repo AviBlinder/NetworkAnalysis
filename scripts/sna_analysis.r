@@ -58,13 +58,16 @@
 #
 ##################################################################################
 
+betweenesss_treshold <- 10
 
 business_sna <- c()
+business_betweeness <- c()
 library(igraph)
 i <- 1
 for (i in 1:nrow(selected_businesses)){
   current_business <- as.character(selected_businesses$business_id[i])
-  cat("current business = ", current_business, "\n")
+  current_business_name <- as.character(selected_businesses$name[i])
+  cat("current business = ", current_business_name, "\n")
   r1 <- subset(reviews,
              reviews$business_id == current_business)
 
@@ -126,7 +129,7 @@ for (i in 1:nrow(selected_businesses)){
 #list.vertex.attributes(g)
 #list.edge.attributes(g)
 #head(V(g)$user_name)
-  max_degree.g <- max(table(degree.g))
+  max_degree.g <- max(table(degree(Y_graph)))
 
 
 #Network diameter
@@ -140,7 +143,7 @@ for (i in 1:nrow(selected_businesses)){
     graphDensity
 
 
-    curr_business_sna <- data.frame(current_business = current_business,
+    curr_business_sna <- data.frame(Business_Name = current_business_name,
                                     vcounts = vcounts,
                                     ecounts = ecounts,
                                     MaxGraphdegree = max_degree.g,
@@ -148,7 +151,29 @@ for (i in 1:nrow(selected_businesses)){
                                     graphDensity = graphDensity)
 
       business_sna <- rbind(business_sna,curr_business_sna)
+
+      btw_grade <- betweenness(Y_graph)
+      head(sort(btw_grade,decreasing = T))
+      btw_g_df <- as.data.frame(btw_grade)
+      btw_g_df$user_id <- row.names(btw_g_df)
+      row.names(btw_g_df) <- NULL
+      btw_g_df <- btw_g_df[,c(2:1)]
+      btw_g_df <- btw_g_df[order(-btw_g_df$btw_grade),]
+      head(btw_g_df)
+      mean_betweeness <-  mean(btw_g)
+      mean_betweeness
+      btw_g_df[btw_g_df$btw_grade > mean_betweeness &
+                 btw_g_df$user_id %in% most_pop_user_df$user_id,]
+      head(btw_g_df,10)
+
+
+      curr_business_btw <- data.frame(Business_Name = rep(current_business_name,betweenesss_treshold),
+                                      user_id = head(btw_g_df,betweenesss_treshold)[1],
+                                      betweeness_score = head(btw_g_df,betweenesss_treshold)[2])
+
+      business_betweeness <- rbind(business_betweeness,curr_business_btw)
 }
+
 
 #Average degree of the neighbors of a given vertex
 #Beyond the degree distribution itself,it can be interesting
@@ -160,44 +185,43 @@ for (i in 1:nrow(selected_businesses)){
 # while there is a tendency for vertices of higher degrees to link with similar vertices,
 # vertices of lowerd egree tend to link with vertices of both lower and higher degrees.
 
+degree.g <- degree(Y_graph)
 knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
 
-plot(degree.g,knn.deg.g,log="xy",
-     col=colors()[35],
-     xlab=c("Log Vertex Degree"),
-     ylab=c("Log Average Neighbor Degree"))
+
+
 
 ###########################################
 ##Vertex centrality (closeness, betweeness, eigenvector centrality)
-btw_g <- betweenness(Y_graph)
-head(sort(btw_g,decreasing = T))
-btw_g_df <- as.data.frame(btw_g)
-btw_g_df$user_id <- row.names(btw_g_df)
-row.names(btw_g_df) <- NULL
-mean_betweeness <-  mean(btw_g)
-btw_g_df[btw_g_df$btw_g > mean_betweeness & btw_g_df$user_id %in% most_pop_user_df$user_id,]
+  # cls_g <- closeness(Y_graph)
+  # head(sort(cls_g,decreasing = T))
+  #
+  # cls_g_df <- as.data.frame(cls_g)
+  # cls_g_df$user_id <- row.names(cls_g_df)
+  # row.names(cls_g_df) <- NULL
+  #
+  # mean_closeness <- mean(cls_g)
+  # cls_g_df[cls_g_df$cls_g > mean_closeness & cls_g_df$user_id %in% most_pop_user_df$user_id,]
 
 
-cls_g <- closeness(Y_graph)
-head(sort(cls_g,decreasing = T))
+  #find shortest_path between elite user that gave high rate and elite user that gave low rate
+  #shortest_paths(g,"kGgAARL2UmvCcTRfiscjug","YRnHZmBUC2MDOUN38hLLVg",output="epath")$epath[1]
+  #dist_g <- distances(g)
+  #dist_table <- distance_table(g,directed = FALSE)
 
-cls_g_df <- as.data.frame(cls_g)
-cls_g_df$user_id <- row.names(cls_g_df)
-row.names(cls_g_df) <- NULL
+  #eb_Y_graph <- edge_betweenness(Y_graph)
+  #head(eb_Y_graph)
 
-mean_closeness <- mean(cls_g)
-cls_g_df[cls_g_df$cls_g > mean_closeness & cls_g_df$user_id %in% most_pop_user_df$user_id,]
+  #edgeB <- E(Y_graph)[order(-eb_Y_graph)][1:10]
+  #edgeB
+  #V(Y_graph) [head(edgeB)]
 
-
-#find shortest_path between elite user that gave high rate and elite user that gave low rate
-#shortest_paths(g,"kGgAARL2UmvCcTRfiscjug","YRnHZmBUC2MDOUN38hLLVg",output="epath")$epath[1]
-#dist_g <- distances(g)
-#dist_table <- distance_table(g,directed = FALSE)
-
-eb_Y_graph <- edge_betweenness(Y_graph)
-head(eb_Y_graph)
-E(Y_graph)[order(-eb_Y_graph)][1:10]
 ################
+####
+#Analyzing the networks betweeness
+names(business_betweeness)
+
+
 ###Network Cohesion
 #Clique = complete subgraph
 cliques(Y_graph) [sapply(cliques(Y_graph),length) > 4]
