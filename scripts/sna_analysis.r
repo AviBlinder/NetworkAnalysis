@@ -69,20 +69,36 @@ for (i in 1:nrow(selected_businesses)){
 
   vcounts <- vcount(Y_graph);
   ecounts <- ecount(Y_graph)
-
+  vcounts;ecounts
 #list.vertex.attributes(g)
 #list.edge.attributes(g)
 #head(V(g)$user_name)
   degree.g <- degree(Y_graph)
 
-  # hist(degree.g[degree.g < 4],col="blue",
-  #    xlab="Degree", ylab="Frequency",
-  #    main="Degree Distribution")
-  #
-  # hist(degree.g[degree.g >= 4],col="blue",
-  #    xlab="Degree", ylab="Frequency",
-  #    xlim=c(4,350),
-  #    main="Degree Distribution")
+  degrees_table <- as.data.frame(table(degree.g))
+  names(degrees_table) <- c("Degree","Frequency")
+  row.names(degrees_table) <- NULL
+  degrees_table$Degree <- as.integer(degrees_table$Degree)
+  plot(log(degrees_table$Degree),log(degrees_table$Frequency))
+
+  p1 <- ggplot(degrees_table, aes(x = Degree, y = Frequency))
+  plot1 <- p1 +  geom_point(aes(color = Degree)) +
+    geom_vline(xintercept = 5, color="red",show.legend = FALSE) +
+    labs(x="Degree Distribution",
+         y = "Frequency") +
+    ggtitle("Degrees Distribution")
+
+
+  p1 <- ggplot(degrees_table, aes(x = log10(Degree), y = log10(Frequency)))
+  plot2 <- p1 +  geom_point(aes(color = log10(Degree),show.legend = FALSE)) +
+    geom_vline(xintercept = log10(5), color="red",show.legend = FALSE) +
+    labs(x="Log10 - Degree Distribution",
+         y = "Log10 - Frequency")  +
+    ggtitle("Log10 of Degrees Distribution")
+
+  require(gridExtra)
+  grid.arrange(plot1, plot2, ncol=2)
+
 
 #Network diameter
   net_diameter <- diameter(Y_graph)
@@ -113,7 +129,7 @@ for (i in 1:nrow(selected_businesses)){
                                     net_diameter = net_diameter,
                                     graphDensity = graphDensity)
 
-    business_sna <- rbind(business_sna,curr_business_sna)
+      business_sna <- rbind(business_sna,curr_business_sna)
 }
 ###########################################
 ##Vertex centrality (closeness, betweeness, eigenvector centrality)

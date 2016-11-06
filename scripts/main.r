@@ -35,3 +35,4 @@ ggplot(selected_businesses[1], aes(x=factor(2), fill=c(FALSES,TRUES)))+
 #Analysis of final results
 # --> which users are the most important
 # --> there are different types of networks...(number of cliques...)
+head(most_pop_user_df)
