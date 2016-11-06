@@ -72,5 +72,38 @@ formattable(business_sna[1:15,] )
 #))
 
 
+dev.off()
+################################################################################
+#Average degree of the neighbors of a given vertex
+#Beyond the degree distribution itself,it can be interesting
+# to understand the manner in which vertices of different degrees are linked with
+# each other.
+# Useful in assessing this characteristic is the notion of the average degree of the
+# neighbors of a given vertex.
+# For example, a plot of average neighbor degree versus vertex degree , suggests that
+# while there is a tendency for vertices of higher degrees to link with similar vertices,
+# vertices of lowerd egree tend to link with vertices of both lower and higher degrees.
+
+degree.g <- degree(Y_graph)
+knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
+
+
+plot(degree.g,knn.deg.g,log="xy",
+     col=colors()[35],
+     xlab=c("Log Vertex Degree"),
+     ylab=c("Log Average Neighbor Degree"))
+names(degree.g) <- NULL
+names(knn.deg.g) <- NULL
+
+knn_degrees <- data.frame(x=degree.g, y=knn.deg.g)
+head(knn_degrees)
+png(filename = "./figures/Vertex Degrees vs. Neighbors Degrees.png")
+p1 <- ggplot(knn_degrees, aes(x = log(x), y = log(y)))
+p1 +  geom_point(aes(color = log(x),show.legend = FALSE)) +
+  scale_colour_gradient(low = colors()[121],high = "blue") +
+  labs(x="Log Vertex Degree",
+       y = "Log Neighbor Degree")  +
+  ggtitle("Vertex Degrees vs. Neighbors Degrees (Log Scaled)")
 
 dev.off()
+################################################################################

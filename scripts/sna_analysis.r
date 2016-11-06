@@ -108,7 +108,7 @@ for (i in 1:nrow(selected_businesses)){
   btw_g_df <- btw_g_df[,c(2:1)]
   btw_g_df <- btw_g_df[order(-btw_g_df$btw_grade),]
   head(btw_g_df)
-  mean_betweeness <-  mean(btw_g)
+  mean_betweeness <-  mean(btw_g_df$btw_grade)
   mean_betweeness
   btw_g_df[btw_g_df$btw_grade > mean_betweeness &
              btw_g_df$user_id %in% most_pop_user_df$user_id,]
@@ -158,12 +158,12 @@ saveRDS(object = edge_betweeness,file="data/edge_betweeness")
 
 ########################################################################################
 #Analyzing the networks betweeness
-names(business_betweeness)
-business_betweeness_df<-as.data.frame(table(business_betweeness$user_id))
-names(business_betweeness_df) <- c("user_id","BTW_Frequency")
-business_betweeness_df <- business_betweeness_df[order(-business_betweeness_df$BTW_Frequency),]
-head(business_betweeness_df)
-most_pop_user_names_info <- merge(most_pop_user_names_info,business_betweeness_df,by="user_id")
+names(users_betweeness)
+users_betweeness_df<-as.data.frame(table(users_betweeness$user_id))
+names(users_betweeness_df) <- c("user_id","BTW_Frequency")
+users_betweeness_df <- users_betweeness_df[order(-users_betweeness_df$BTW_Frequency),]
+head(users_betweeness_df)
+most_pop_user_names_info <- merge(most_pop_user_names_info,users_betweeness_df,by="user_id")
 most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
 most_pop_user_names_info
 
@@ -185,37 +185,5 @@ edge_betweeness_df_not_full <- edge_betweeness_df_not_full[order(-edge_betweenes
 head(edge_betweeness_df_not_full)
 
 
-########################################################################################
-#Average degree of the neighbors of a given vertex
-#Beyond the degree distribution itself,it can be interesting
-# to understand the manner in which vertices of different degrees are linked with
-# each other.
-# Useful in assessing this characteristic is the notion of the average degree of the
-# neighbors of a given vertex.
-# For example, a plot of average neighbor degree versus vertex degree , suggests that
-# while there is a tendency for vertices of higher degrees to link with similar vertices,
-# vertices of lowerd egree tend to link with vertices of both lower and higher degrees.
-
-degree.g <- degree(Y_graph)
-knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
 
 
-plot(degree.g,knn.deg.g,log="xy",
-     col=colors()[35],
-     xlab=c("Log Vertex Degree"),
-     ylab=c("Log Average Neighbor Degree"))
-names(degree.g) <- NULL
-names(knn.deg.g) <- NULL
-
-knn_degrees <- data.frame(x=degree.g, y=knn.deg.g)
-head(knn_degrees)
-png(filename = "./figures/Vertex Degrees vs. Neighbors Degrees.png")
-p1 <- ggplot(knn_degrees, aes(x = log(x), y = log(y)))
-p1 +  geom_point(aes(color = log(x),show.legend = FALSE)) +
-  scale_colour_gradient(low = colors()[121],high = "blue") +
-   labs(x="Log Vertex Degree",
-        y = "Log Neighbor Degree")  +
-   ggtitle("Vertex Degrees vs. Neighbors Degrees (Log Scaled)")
-
-dev.off()
-########################################################################################

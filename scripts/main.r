@@ -5,9 +5,9 @@ source("scripts/read_datasets.r")
 
 source("scripts/main_loop.r")
 
-source("scripts/gather_sna_data.r")
+source("scripts/sna_analysis.r")
 
-source("scripts/make_tables.r")
+#source("scripts/make_tables.r")
 
 
 ####################################################################
