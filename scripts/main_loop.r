@@ -18,24 +18,7 @@ input_business <- input_business[,c(1,3,2)]
 input_business <- input_business[order(-input_business$reviewsNumber),]
 
 ###########################################################################################
-head(input_business)
-row.names(input_business) <- NULL
-kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number of Reviews"),
-      caption = "Top 10 Most Reviewed Restaurants")
 
-png(filename = "ReviewsNumbers.png",
-    bg = colors()[13], res = NA, family = "", restoreConsole = TRUE)
-hist(input_business$reviewsNumber,col=colors()[135],breaks = nrow(input_business)/4,
-     xlim=c(1100,5600),ylim=c(0,20),border = colors()[300],
-     main="Top 100 Restaurants by Number of Reviews",xlab = "Number of Reviews",ylab = "Count of Restaurants")
-dev.off()
-
-png(filename = "Top 15 Most Reviewed Restaurants.png",
-    bg = "white", res = NA, family = "", restoreConsole = TRUE)
-kable(head(input_business[,c(2:3)],15),align = "c",col.names = c("Name","Number of Reviews"),
-      caption = "Top 15 Most Reviewed Restaurants")
-dev.off()
-##########################################################################################
 ##Analyze the number of users with and withoud friends that gave reviews to a business
 friends_props <- c()
 for (i in 1:nrow(input_business)){
@@ -108,17 +91,6 @@ reviews_number1 <- reviews_number1[,c(3,1,6,7,8,2,4,5)]
 names(reviews_number1) <- c("name","Yelper Since","Number of Friends","Elite Years",
                             "Number of Reviews on Top Restaurants","Total Reviews","Fans",
                             "Average Stars")
-
-
-
-png(filename = "Top 10 Users By Number of Reviewes to Selected Restaurants.png",
-    bg = "white", res = NA, family = "", restoreConsole = TRUE)
-kable(reviews_number1[,c(1:5)],align = "c",
-      col.names = c("name","Yelper Since","Friends Number","Elite Years",
-                    "Reviews on Top Rests."),
-      caption = "Top 10 Users By Number of Reviewes to Selected Restaurants")
-dev.off()
-
 #########################################################################################
 # business_featuers <- names(selected_businesses)[c(1,31:87)]
 # idx <- which(business_featuers %in% c("Noise.Level","Attire","Alcohol",
