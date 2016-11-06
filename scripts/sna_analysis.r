@@ -216,12 +216,22 @@ knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
   #edgeB
   #V(Y_graph) [head(edgeB)]
 
-################
+########################################################################################
 ####
 #Analyzing the networks betweeness
 names(business_betweeness)
+business_betweeness_df<-as.data.frame(table(business_betweeness$user_id))
+names(business_betweeness_df) <- c("user_id","BTW_Frequency")
+business_betweeness_df <- business_betweeness_df[order(-business_betweeness_df$BTW_Frequency),]
+head(business_betweeness_df)
+most_pop_user_names_info <- merge(most_pop_user_names_info,business_betweeness_df,by="user_id")
+most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
+most_pop_user_names_info
 
 
+
+
+####################################################################################
 ###Network Cohesion
 #Clique = complete subgraph
 cliques(Y_graph) [sapply(cliques(Y_graph),length) > 4]
