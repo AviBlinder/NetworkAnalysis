@@ -159,13 +159,18 @@ saveRDS(object = edge_betweeness,file="data/edge_betweeness")
 ########################################################################################
 #Analyzing the networks betweeness
 names(users_betweeness)
-users_betweeness_df<-as.data.frame(table(users_betweeness$user_id))
+head(users_betweeness)
+
+users_betweeness_df <-as.data.frame(table(users_betweeness$user_id))
+head(users_betweeness_df)
 names(users_betweeness_df) <- c("user_id","BTW_Frequency")
 users_betweeness_df <- users_betweeness_df[order(-users_betweeness_df$BTW_Frequency),]
 head(users_betweeness_df)
 most_pop_user_names_info <- merge(most_pop_user_names_info,users_betweeness_df,by="user_id")
 most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
-most_pop_user_names_info
+dim(users_betweeness_df)
+dim(most_pop_user_names_info)
+
 
 
 #Analyzing the edge_betweeness in the networks
