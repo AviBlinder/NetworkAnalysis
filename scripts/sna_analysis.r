@@ -4,6 +4,61 @@
 #3. Network Cohesion (cliques)
 #4. Communities/clustering
 
+##################################################################################
+# friends_b1 <- friends[friends$user_id %in% as.character(users_b1$user_id),]
+# friends_b1$X <- NULL
+# friends_b1_unique_userd_id <- as.character(unique(as.character(friends_b1$user_id)))
+#
+#
+# Y_graph <- graph.data.frame(friends_b1,directed = FALSE,vertices = users_vertices)
+#
+#
+# vcounts <- vcount(Y_graph);
+# ecounts <- ecount(Y_graph)
+# vcounts;ecounts
+# #list.vertex.attributes(g)
+# #list.edge.attributes(g)
+# #head(V(g)$user_name)
+# degree.g <- degree(Y_graph)
+#
+# degrees_table <- as.data.frame(table(degree.g))
+# names(degrees_table) <- c("Degree","Frequency")
+# row.names(degrees_table) <- NULL
+# degrees_table$Degree <- as.integer(degrees_table$Degree)
+#
+# p1 <- ggplot(degrees_table, aes(x = Degree, y = Frequency))
+# plot1 <- p1 +  geom_point(aes(color = Degree)) +
+#   geom_vline(xintercept = 5, color="red",show.legend = FALSE) +
+#   labs(x="Degree Distribution",
+#        y = "Frequency") +
+#   ggtitle("Degrees Distribution")
+#
+#
+# p1 <- ggplot(degrees_table, aes(x = log10(Degree), y = log10(Frequency)))
+# plot2 <- p1 +  geom_point(aes(color = log10(Degree),show.legend = FALSE)) +
+#   geom_vline(xintercept = log10(5), color="red",show.legend = FALSE) +
+#   labs(x="Log10 - Degree Distribution",
+#        y = "Log10 - Frequency")  +
+#   ggtitle("Log10 of Degrees Distribution")
+#
+# require(gridExtra)
+# grid.arrange(plot1, plot2, ncol=2)
+#
+#
+# #Network diameter
+# net_diameter <- diameter(Y_graph)
+# net_diameter
+# farthest_users <-  farthest.nodes(Y_graph,directed = F)$vertices
+# farthest_users[[1]]$user_name;  farthest_users[[2]]$user_name
+#
+#
+# graphDensity <- graph.density(Y_graph)
+# graphDensity
+#
+#
+##################################################################################
+
+
 business_sna <- c()
 library(igraph)
 i <- 1
@@ -53,8 +108,6 @@ for (i in 1:nrow(selected_businesses)){
 #friends_b1[friends_b1$friends %in% dup_users,]
 #friends_b1[friends_b1$user_id %in% dup_users,]
 
-#subset(friends_b1,as.character(friends_b1$user_id) == "NXbrKqnF20Wfvu51Z3pXtw")
-###
 #Create a graph dataframe
   Y_graph <- graph.data.frame(friends_b1,directed = FALSE,vertices = users_vertices)
 #g <- graph.data.frame(friends_b1,directed = FALSE)
@@ -73,37 +126,30 @@ for (i in 1:nrow(selected_businesses)){
 #list.vertex.attributes(g)
 #list.edge.attributes(g)
 #head(V(g)$user_name)
-  degree.g <- degree(Y_graph)
-
-  degrees_table <- as.data.frame(table(degree.g))
-  names(degrees_table) <- c("Degree","Frequency")
-  row.names(degrees_table) <- NULL
-  degrees_table$Degree <- as.integer(degrees_table$Degree)
-  plot(log(degrees_table$Degree),log(degrees_table$Frequency))
-
-  p1 <- ggplot(degrees_table, aes(x = Degree, y = Frequency))
-  plot1 <- p1 +  geom_point(aes(color = Degree)) +
-    geom_vline(xintercept = 5, color="red",show.legend = FALSE) +
-    labs(x="Degree Distribution",
-         y = "Frequency") +
-    ggtitle("Degrees Distribution")
-
-
-  p1 <- ggplot(degrees_table, aes(x = log10(Degree), y = log10(Frequency)))
-  plot2 <- p1 +  geom_point(aes(color = log10(Degree),show.legend = FALSE)) +
-    geom_vline(xintercept = log10(5), color="red",show.legend = FALSE) +
-    labs(x="Log10 - Degree Distribution",
-         y = "Log10 - Frequency")  +
-    ggtitle("Log10 of Degrees Distribution")
-
-  require(gridExtra)
-  grid.arrange(plot1, plot2, ncol=2)
+  max_degree.g <- max(table(degree.g))
 
 
 #Network diameter
   net_diameter <- diameter(Y_graph)
+  net_diameter
+  farthest_users <-  farthest.nodes(Y_graph,directed = F)$vertices
+  farthest_users[[1]]$user_name;  farthest_users[[2]]$user_name
 
-  #farthest.nodes(Y_graph,directed = F)
+
+    graphDensity <- graph.density(Y_graph)
+    graphDensity
+
+
+    curr_business_sna <- data.frame(current_business = current_business,
+                                    vcounts = vcounts,
+                                    ecounts = ecounts,
+                                    MaxGraphdegree = max_degree.g,
+                                    net_diameter = net_diameter,
+                                    graphDensity = graphDensity)
+
+      business_sna <- rbind(business_sna,curr_business_sna)
+}
+
 #Average degree of the neighbors of a given vertex
 #Beyond the degree distribution itself,it can be interesting
 # to understand the manner in which vertices of different degrees are linked with
@@ -114,23 +160,13 @@ for (i in 1:nrow(selected_businesses)){
 # while there is a tendency for vertices of higher degrees to link with similar vertices,
 # vertices of lowerd egree tend to link with vertices of both lower and higher degrees.
 
-#knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
-#plot(degree.g,knn.deg.g,log="xy",
-#     col=colors()[35],
-#     xlab=c("Log Vertex Degree"),
-#     ylab=c("Log Average Neighbor Degree"))
+knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
 
-    graphDensity <- graph.density(Y_graph)
+plot(degree.g,knn.deg.g,log="xy",
+     col=colors()[35],
+     xlab=c("Log Vertex Degree"),
+     ylab=c("Log Average Neighbor Degree"))
 
-    curr_business_sna <- data.frame(current_business = current_business,
-                                    vcounts = vcounts,
-                                    ecounts = ecounts,
-                                    Graphdegree = degree.g,
-                                    net_diameter = net_diameter,
-                                    graphDensity = graphDensity)
-
-      business_sna <- rbind(business_sna,curr_business_sna)
-}
 ###########################################
 ##Vertex centrality (closeness, betweeness, eigenvector centrality)
 btw_g <- betweenness(Y_graph)
