@@ -112,8 +112,6 @@ for (i in 1:nrow(selected_businesses)){
   mean_betweeness
   btw_g_df[btw_g_df$btw_grade > mean_betweeness &
              btw_g_df$user_id %in% most_pop_user_df$user_id,]
-#  head(btw_g_df,10)
-
 
   curr_business_btw <- data.frame(Business_Name = rep(current_business_name,
                                                       betweenesss_treshold),
@@ -154,6 +152,10 @@ for (i in 1:nrow(selected_businesses)){
 
 
 }
+saveRDS(object = business_sna,file = "data/business_sna")
+saveRDS(object = users_betweeness,file="data/users_betweeness")
+saveRDS(object = edge_betweeness,file="data/edge_betweeness")
+
 ########################################################################################
 #Analyzing the networks betweeness
 names(business_betweeness)

@@ -59,8 +59,10 @@ businesses_for_analysis <- businesses_for_analysis[order(-businesses_for_analysi
 
 selected_businesses <- merge(businesses_for_analysis,business,by="business_id")
 selected_businesses <- selected_businesses[order(-selected_businesses$TRUES),]
-View(selected_businesses)
+#View(selected_businesses)
 dim(businesses_for_analysis)
+saveRDS(object = selected_businesses,
+        file="/DataScienceProjects/NetworkAnalysis/data/selected_businesses")
 
 #names(selected_businesses)
 reviews_table <- reviews[(reviews$business_id %in% selected_businesses$business_id),]
@@ -82,7 +84,9 @@ most_pop_user_names <- reviews_number$user_id
 most_pop_user_names_info <- users[users$user_id %in% most_pop_user_names,]
 most_pop_user_names_info <- merge(most_pop_user_names_info,reviews_number,by="user_id")
 most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$AppearanceNumber),]
-View(most_pop_user_names_info)
+#View(most_pop_user_names_info)
+saveRDS(object = most_pop_user_names_info,
+        file = "/DataScienceProjects/NetworkAnalysis/data/most_pop_user_names_info")
 
 
 reviews_number1 <- most_pop_user_names_info[,-c(1,7)]
