@@ -79,15 +79,15 @@ reviews_number
 
 
 ############################################################################################
-most_pop_user_names <- reviews_number$user_id
+most_pop_user_names <- as.character(reviews_number$user_id)
 
 most_pop_user_names_info <- users[users$user_id %in% most_pop_user_names,]
 most_pop_user_names_info <- merge(most_pop_user_names_info,reviews_number,by="user_id")
-most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$AppearanceNumber),]
+most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$FriendsNumber),]
 #View(most_pop_user_names_info)
 saveRDS(object = most_pop_user_names_info,
         file = "/DataScienceProjects/NetworkAnalysis/data/most_pop_user_names_info")
-
+most_pop_user_names_info
 
 reviews_number1 <- most_pop_user_names_info[,-c(1,7)]
 row.names(reviews_number1) <- NULL

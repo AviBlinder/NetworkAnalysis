@@ -155,39 +155,61 @@ for (i in 1:nrow(selected_businesses)){
 saveRDS(object = business_sna,file = "data/business_sna")
 saveRDS(object = users_betweeness,file="data/users_betweeness")
 saveRDS(object = edge_betweeness,file="data/edge_betweeness")
-
+#users_betweeness <- readRDS(file = "data/users_betweeness")
 ########################################################################################
 #Analyzing the networks betweeness
 names(users_betweeness)
-head(users_betweeness)
+head(users_betweeness,15)
 
-users_betweeness_df <-as.data.frame(table(users_betweeness$user_id))
-head(users_betweeness_df)
-names(users_betweeness_df) <- c("user_id","BTW_Frequency")
-users_betweeness_df <- users_betweeness_df[order(-users_betweeness_df$BTW_Frequency),]
-head(users_betweeness_df)
-most_pop_user_names_info <- merge(most_pop_user_names_info,users_betweeness_df,by="user_id")
-most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
-dim(users_betweeness_df)
+library(dplyr)
+ranks <- users_betweeness %>% group_by(Business_Name) %>%
+     mutate(rank = dense_rank(btw_grade))
+ranks_df <- data.frame(ranks)
+users_betweeness$rank <- ranks_df$rank
+head(users_betweeness)
+user_ranks <- users_betweeness %>% group_by(user_id) %>%
+  summarise(sum(rank))
+user_ranks_df <- data.frame(user_ranks)
+names(user_ranks_df) <- c("user_id","user_rank")
+user_ranks_df <- user_ranks_df[order(-user_ranks_df$user_rank),]
+head(user_ranks_df)
 dim(most_pop_user_names_info)
+most_pop_user_names_info <- merge(most_pop_user_names_info,user_ranks_df,
+                                  by="user_id",all.x = FALSE,all.y = FALSE)
+
+most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$user_rank),]
+most_pop_user_names_info
+
+
+
+#################
+# users_betweeness_df <-as.data.frame(table(users_betweeness$user_id))
+# head(users_betweeness_df)
+# names(users_betweeness_df) <- c("user_id","BTW_Frequency")
+# users_betweeness_df <- users_betweeness_df[order(-users_betweeness_df$BTW_Frequency),]
+# head(users_betweeness_df)
+# most_pop_user_names_info <- merge(most_pop_user_names_info,users_betweeness_df,by="user_id")
+# most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
+# dim(users_betweeness_df)
+# dim(most_pop_user_names_info)
 
 
 
 #Analyzing the edge_betweeness in the networks
-edge_betweeness_users <- as.character(unique(edge_betweeness$user_id))
-setdiff(edge_betweeness_users,most_pop_user_names_info)
-
-edge_betweeness_df <- as.data.frame(table(edge_betweeness$user_id))
-
-row.names(edge_betweeness_df) <- NULL
-names(edge_betweeness_df) <- c("user_id","freq")
-edge_betweeness_df <- edge_betweeness_df[order(-edge_betweeness_df$freq),]
-head(edge_betweeness_df)
-edge_betweeness_df_not <- edge_betweeness_df[!edge_betweeness_df$user_id %in% most_pop_user_names_info$user_id,]
-head(edge_betweeness_df_not)
-edge_betweeness_df_not_full <- merge(edge_betweeness_df_not,users,by="user_id")
-edge_betweeness_df_not_full <- edge_betweeness_df_not_full[order(-edge_betweeness_df_not_full$freq),]
-head(edge_betweeness_df_not_full)
+# edge_betweeness_users <- as.character(unique(edge_betweeness$user_id))
+# setdiff(edge_betweeness_users,most_pop_user_names_info)
+#
+# edge_betweeness_df <- as.data.frame(table(edge_betweeness$user_id))
+#
+# row.names(edge_betweeness_df) <- NULL
+# names(edge_betweeness_df) <- c("user_id","freq")
+# edge_betweeness_df <- edge_betweeness_df[order(-edge_betweeness_df$freq),]
+# head(edge_betweeness_df)
+# edge_betweeness_df_not <- edge_betweeness_df[!edge_betweeness_df$user_id %in% most_pop_user_names_info$user_id,]
+# head(edge_betweeness_df_not)
+# edge_betweeness_df_not_full <- merge(edge_betweeness_df_not,users,by="user_id")
+# edge_betweeness_df_not_full <- edge_betweeness_df_not_full[order(-edge_betweeness_df_not_full$freq),]
+# head(edge_betweeness_df_not_full)
 
 
 
