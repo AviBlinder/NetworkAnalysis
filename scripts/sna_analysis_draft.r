@@ -5,11 +5,63 @@
 #4. Communities/clustering
 
 ##################################################################################
+# friends_b1 <- friends[friends$user_id %in% as.character(users_b1$user_id),]
+# friends_b1$X <- NULL
+# friends_b1_unique_userd_id <- as.character(unique(as.character(friends_b1$user_id)))
+#
+#
+# Y_graph <- graph.data.frame(friends_b1,directed = FALSE,vertices = users_vertices)
+#
+#
+# vcounts <- vcount(Y_graph);
+# ecounts <- ecount(Y_graph)
+# vcounts;ecounts
+# #list.vertex.attributes(g)
+# #list.edge.attributes(g)
+# #head(V(g)$user_name)
+# degree.g <- degree(Y_graph)
+#
+# degrees_table <- as.data.frame(table(degree.g))
+# names(degrees_table) <- c("Degree","Frequency")
+# row.names(degrees_table) <- NULL
+# degrees_table$Degree <- as.integer(degrees_table$Degree)
+#
+# p1 <- ggplot(degrees_table, aes(x = Degree, y = Frequency))
+# plot1 <- p1 +  geom_point(aes(color = Degree)) +
+#   geom_vline(xintercept = 5, color="red",show.legend = FALSE) +
+#   labs(x="Degree Distribution",
+#        y = "Frequency") +
+#   ggtitle("Degrees Distribution")
+#
+#
+# p1 <- ggplot(degrees_table, aes(x = log10(Degree), y = log10(Frequency)))
+# plot2 <- p1 +  geom_point(aes(color = log10(Degree),show.legend = FALSE)) +
+#   geom_vline(xintercept = log10(5), color="red",show.legend = FALSE) +
+#   labs(x="Log10 - Degree Distribution",
+#        y = "Log10 - Frequency")  +
+#   ggtitle("Log10 of Degrees Distribution")
+#
+# require(gridExtra)
+# grid.arrange(plot1, plot2, ncol=2)
+#
+#
+# #Network diameter
+# net_diameter <- diameter(Y_graph)
+# net_diameter
+# farthest_users <-  farthest.nodes(Y_graph,directed = F)$vertices
+# farthest_users[[1]]$user_name;  farthest_users[[2]]$user_name
+#
+#
+# graphDensity <- graph.density(Y_graph)
+# graphDensity
+#
+#
+##################################################################################
+
 betweenesss_treshold <- 10
 
 business_sna <- c()
-users_betweeness <- c()
-edge_betweeness <-  c()
+business_betweeness <- c()
 library(igraph)
 i <- 1
 for (i in 1:nrow(selected_businesses)){
@@ -112,50 +164,17 @@ for (i in 1:nrow(selected_businesses)){
   mean_betweeness
   btw_g_df[btw_g_df$btw_grade > mean_betweeness &
              btw_g_df$user_id %in% most_pop_user_df$user_id,]
-#  head(btw_g_df,10)
+  head(btw_g_df,10)
 
 
-  curr_business_btw <- data.frame(Business_Name = rep(current_business_name,
-                                                      betweenesss_treshold),
+  curr_business_btw <- data.frame(Business_Name = rep(current_business_name,betweenesss_treshold),
                                   user_id = head(btw_g_df,betweenesss_treshold)[1],
-                                  betweeness_score =
-                                    head(btw_g_df,betweenesss_treshold)[2])
+                                  betweeness_score = head(btw_g_df,betweenesss_treshold)[2])
 
-  users_betweeness <- rbind(users_betweeness,curr_business_btw)
-
-  eb_Y_graph <- edge_betweenness(Y_graph)
-
-
-  #Select the top n most important edges
-  edgeB <- E(Y_graph)[order(-eb_Y_graph)][1:betweenesss_treshold]
- # attributes(edgeB)
-  imp_edges <- attr(edgeB,"vnames")
-
-  nodes_list <- c()
-  for (i in 1:length(imp_edges)){
-
-    node_left <- as.character(substring(imp_edges[i],1,22))
-    node_right <- as.character(substring(imp_edges[i],24,nchar(imp_edges[i])))
-    nodes <- cbind(node_left,node_right)
-    nodes_list <- rbind (nodes_list,nodes)
-
-  }
-  nodes_list <- as.data.frame(nodes_list)
-  nodes_list_unif <- as.character(nodes_list$node_left)
-  nodes_list_unif <- c(nodes_list_unif,as.character(nodes_list$node_right))
-  nodes_list_unif <- unique(nodes_list_unif)
-
-
-  curr_business_edge_btw <- data.frame(Business_Name = rep(current_business_name,
-                                                           length(nodes_list_unif)),
-                                       user_id = nodes_list_unif)
-
-  edge_betweeness <- rbind(edge_betweeness,curr_business_edge_btw)
-
-
+  business_betweeness <- rbind(business_betweeness,curr_business_btw)
 }
 
-########################################################################################
+
 #Average degree of the neighbors of a given vertex
 #Beyond the degree distribution itself,it can be interesting
 # to understand the manner in which vertices of different degrees are linked with
@@ -169,6 +188,34 @@ for (i in 1:nrow(selected_businesses)){
 degree.g <- degree(Y_graph)
 knn.deg.g <- graph.knn(Y_graph,V(Y_graph))$knn
 
+
+
+
+###########################################
+##Vertex centrality (closeness, betweeness, eigenvector centrality)
+# cls_g <- closeness(Y_graph)
+# head(sort(cls_g,decreasing = T))
+#
+# cls_g_df <- as.data.frame(cls_g)
+# cls_g_df$user_id <- row.names(cls_g_df)
+# row.names(cls_g_df) <- NULL
+#
+# mean_closeness <- mean(cls_g)
+# cls_g_df[cls_g_df$cls_g > mean_closeness & cls_g_df$user_id %in% most_pop_user_df$user_id,]
+
+
+#find shortest_path between elite user that gave high rate and elite user that gave low rate
+#shortest_paths(g,"kGgAARL2UmvCcTRfiscjug","YRnHZmBUC2MDOUN38hLLVg",output="epath")$epath[1]
+#dist_g <- distances(g)
+#dist_table <- distance_table(g,directed = FALSE)
+
+#eb_Y_graph <- edge_betweenness(Y_graph)
+#head(eb_Y_graph)
+
+#edgeB <- E(Y_graph)[order(-eb_Y_graph)][1:10]
+#edgeB
+#V(Y_graph) [head(edgeB)]
+
 ########################################################################################
 ####
 #Analyzing the networks betweeness
@@ -181,19 +228,56 @@ most_pop_user_names_info <- merge(most_pop_user_names_info,business_betweeness_d
 most_pop_user_names_info <- most_pop_user_names_info[order(-most_pop_user_names_info$BTW_Frequency),]
 most_pop_user_names_info
 
+####################################################################################
+###Network Cohesion
+#Clique = complete subgraph
+cliques(Y_graph) [sapply(cliques(Y_graph),length) > 4]
+max(sapply(cliques(Y_graph),length))
 
-#Analyzing the edge_betweeness in the networks
-edge_betweeness_users <- as.character(unique(edge_betweeness$user_id))
-setdiff(edge_betweeness_users,most_pop_user_names_info)
+table(sapply(maximal.cliques(Y_graph),length))
+max_maximal_clique <- max(sapply(maximal.cliques(Y_graph),length))
 
-edge_betweeness_df <- as.data.frame(table(edge_betweeness$user_id))
 
-row.names(edge_betweeness_df) <- NULL
-names(edge_betweeness_df) <- c("user_id","freq")
-edge_betweeness_df <- edge_betweeness_df[order(-edge_betweeness_df$freq),]
-head(edge_betweeness_df)
-edge_betweeness_df_not <- edge_betweeness_df[!edge_betweeness_df$user_id %in% most_pop_user_names_info$user_id,]
-head(edge_betweeness_df_not)
-edge_betweeness_df_not_full <- merge(edge_betweeness_df_not,users,by="user_id")
-edge_betweeness_df_not_full <- edge_betweeness_df_not_full[order(-edge_betweeness_df_not_full$freq),]
-head(edge_betweeness_df_not_full)
+
+############################
+##Community Analysis
+##Clustering
+#sgc <- spinglass.community(Y_graph)
+
+## clusters --> fast algorithm
+#cls <- clusters(Y_graph)
+##edge.betweenness.community --> heavy algorithm!!
+#cls <- edge.betweenness.community(Y_graph)
+
+#fastgreedy --> fast algorithm
+cls <- fastgreedy.community(Y_graph)
+
+table(cls$membership)
+cls$csize
+cls$no
+
+V(Y_graph)$membership <- cls$membership
+V(Y_graph) [ membership == 1 ]$color <- "cyan"
+V(Y_graph) [ membership == 2 ]$color <- "green"
+V(Y_graph) [ membership == 3 ]$color <- "blue"
+V(Y_graph) [ membership == 4 ]$color <- colors()[4]
+V(Y_graph) [ membership == 5 ]$color <- colors()[5]
+V(Y_graph) [ membership == 6 ]$color <- colors()[6]
+V(Y_graph) [ membership == 7 ]$color <- colors()[7]
+V(Y_graph) [ membership == 8 ]$color <- colors()[8]
+V(Y_graph) [ membership == 9 ]$color <- colors()[9]
+V(Y_graph) [ membership > 9 ]$color <- colors()[10]
+V(Y_graph)$size <- 0.1
+
+set.seed(4312)
+l <- layout.drl(Y_graph)
+plot(Y_graph,
+     #     layout=layout.fruchterman.reingold,
+     layout=l,
+     vertex.color=V(Y_graph)$color,
+     vertex.size = V(Y_graph)$size,
+     vertex.label = NA,
+     edge.width = NA,
+     edge.arrow.size = 0.001)
+
+
